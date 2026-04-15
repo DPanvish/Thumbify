@@ -1,0 +1,50 @@
+Thumbify Setup Notes
+====================
+
+Project structure:
+- The React client app is inside the `client` folder.
+- Run npm commands from `client` unless a later step says otherwise.
+
+Step 1: Frontend package installation
+-------------------------------------
+
+Command:
+
+```bash
+cd client
+npm install @tailwindcss/vite tailwindcss lenis lucide-react motion react-fast-marquee react-router-dom
+```
+
+Dependencies added and why they are used:
+
+- `@tailwindcss/vite`
+  - Adds Tailwind CSS v4 directly into the Vite build pipeline.
+  - Used in `client/vite.config.ts` through the `tailwindcss()` Vite plugin.
+
+- `tailwindcss`
+  - Provides the utility-first CSS framework used for styling the React UI.
+  - Used in `client/src/globals.css` with `@import "tailwindcss";`.
+
+- `lenis`
+  - Adds smooth scrolling behavior to the page.
+  - Used in `client/src/components/LenisScroll.tsx`.
+
+- `lucide-react`
+  - Provides lightweight React icon components.
+  - Used across navbar, hero, features, pricing, contact, and footer components.
+
+- `motion`
+  - Provides animation primitives for React components.
+  - Used through `motion/react` for entrance animations, hover/tap animation, and interactive image tilt effects.
+
+- `react-fast-marquee`
+  - Provides a ready-made marquee/continuous scrolling component.
+  - Used in the testimonial section to scroll testimonial cards horizontally.
+
+- `react-router-dom`
+  - Provides client-side routing for the React app.
+  - Used in `client/src/main.tsx`, `client/src/App.tsx`, navbar links, and footer links.
+
+Notes:
+- `react` and `react-dom` are the core React runtime dependencies already required by the Vite React app.
+- Vite, TypeScript types, ESLint, and React plugin packages are development tooling for running, building, and linting the client app.
