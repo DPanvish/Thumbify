@@ -12,9 +12,12 @@ const ColorSchemeSelector = ({value, onChange}: {
             {colorSchemes.map((scheme) => (
                 <button
                     key={scheme.id}
+                    type="button"
                     onClick={() => onChange(scheme.id)}
-                    className={`relative rounded-lg transition-all ${value === scheme.id && "ring-2 ring-pink-500"}`}
+                    className={`relative rounded-lg transition-all ${value === scheme.id ? "ring-2 ring-pink-500" : ""}`}
                     title={scheme.name}
+                    aria-label={scheme.name}
+                    aria-pressed={value === scheme.id}
                 >
                     <div className="flex h-10 rounded-lg overflow-hidden">
                         {scheme.colors.map((color, idx) => (
@@ -29,7 +32,11 @@ const ColorSchemeSelector = ({value, onChange}: {
             ))}
         </div>
 
-        <p className="text-xs text-zinc-400">Selected: {colorSchemes.find((scheme) => scheme.id === value)?.name}</p>
+        {colorSchemes.some((scheme) => scheme.id === value) && (
+            <p className="text-xs text-zinc-400">
+                Selected: {colorSchemes.find((scheme) => scheme.id === value)?.name}
+            </p>
+        )}
     </div>
   )
 }

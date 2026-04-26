@@ -1,7 +1,6 @@
 import type React from "react";
 import { thumbnailStyles, type ThumbnailStyle } from "../assets/assets"
 import { ChevronDownIcon, CpuIcon, ImageIcon, PenToolIcon, SparkleIcon, SquareIcon } from "lucide-react";
-import { style } from "motion/react-client";
 
 const StyleSelector = ({value, onChange, isOpen, setIsOpen}: {
     value: ThumbnailStyle;
@@ -47,7 +46,7 @@ const StyleSelector = ({value, onChange, isOpen, setIsOpen}: {
             </button>
 
             {isOpen && (
-                <div className="absolute bottom-0 z-50 mt-1 w-full rounded-md border border-white/12 bg-black/20 backdrop-blur-3xl shadow-lg">
+                <div className="absolute top-full left-0 z-50 mt-1 w-full rounded-md border border-white/12 bg-black/20 backdrop-blur-3xl shadow-lg">
                     {thumbnailStyles.map((style) => (
                         <button
                             key={style}

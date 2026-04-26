@@ -15,13 +15,27 @@ const PreviewPanel = ({thumbnail, isLoading, aspectRatio}: {
         "9:16": "aspect-[9/16]",
     } as Record<AspectRatio, string>;
 
-    const onDownload = () => {
-        if(!thumbnail?.image_url){
+    const onDownload = async () => {
+        if (!thumbnail?.image_url){
             return;
         }
-
-        window.open(thumbnail.image_url, "_blank");
-    }
+        
+        try {
+            const res = await fetch(thumbnail.image_url);
+            const blob = await res.blob();
+            const objectUrl = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = objectUrl;
+            a.download = `${thumbnail.title || "thumbnail"}.png`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(objectUrl);
+        } catch {
+            // Fallback: open in a new tab with noopener
+            window.open(thumbnail.image_url, "_blank", "noopener,noreferrer");
+        }
+    };
 
     return (
         <div className="relative mx-auto w-full max-w-2xl">
