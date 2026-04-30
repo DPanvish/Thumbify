@@ -48,3 +48,85 @@ Dependencies added and why they are used:
 Notes:
 - `react` and `react-dom` are the core React runtime dependencies already required by the Vite React app.
 - Vite, TypeScript types, ESLint, and React plugin packages are development tooling for running, building, and linting the client app.
+
+Step 2: Backend package installation
+------------------------------------
+
+Command:
+
+```bash
+cd server
+npm install bcrypt connect-mongo cors dotenv express express-session mongoose
+npm install -D @types/bcrypt @types/cors @types/express @types/express-session @types/node nodemon ts-node tsx typescript
+```
+
+Dependencies added and why they are used:
+
+- `express`
+  - Creates the backend HTTP server and route layer.
+  - Used in `server/server.ts` to initialize the app and define the health route.
+
+- `cors`
+  - Allows the frontend client to call the backend from a different origin during development.
+  - Used as middleware in `server/server.ts`.
+
+- `dotenv`
+  - Loads environment variables from `.env` into `process.env`.
+  - Used in `server/server.ts` through `import "dotenv/config"`.
+
+- `mongoose`
+  - Connects the app to MongoDB and defines database models/schemas.
+  - Used in `server/configs/db.ts` for the database connection and in `server/models/User.ts` for the user schema.
+
+- `bcrypt`
+  - Used to hash and compare passwords securely for authentication.
+  - Installed for user auth flows; not yet used in the current backend files.
+
+- `express-session`
+  - Adds session support for login state and server-managed authentication flows.
+  - Used in `server/server.ts` to store login-related session data and configure session cookies.
+
+- `connect-mongo`
+  - Lets Express sessions be stored in MongoDB instead of memory.
+  - Installed for persistent session storage with MongoDB-backed auth flows; not yet wired into the current session config.
+
+Dev dependencies added and why they are used:
+
+- `typescript`
+  - Enables TypeScript compilation for the backend.
+  - Used by the `build` script: `tsc`.
+
+- `tsx`
+  - Runs TypeScript files directly in development without a manual compile step.
+  - Used by the `start` and `dev` scripts.
+
+- `nodemon`
+  - Restarts the backend automatically when server files change.
+  - Used by the `dev` script together with `tsx`.
+
+- `@types/express`
+  - Provides TypeScript types for Express APIs.
+  - Supports typed `Request` and `Response` usage in `server/server.ts`.
+
+- `@types/cors`
+  - Provides TypeScript types for the `cors` package.
+
+- `@types/bcrypt`
+  - Provides TypeScript types for `bcrypt`.
+  - Useful when password hashing and comparison logic is added to auth controllers, model hooks, or service functions.
+
+- `@types/express-session`
+  - Provides TypeScript types for session middleware.
+
+- `@types/node`
+  - Provides TypeScript types for Node.js globals and runtime APIs.
+
+- `ts-node`
+  - Executes TypeScript in Node-based workflows.
+  - Installed as backend tooling, but the current scripts use `tsx` instead.
+
+Notes:
+- The backend currently starts with `npm run dev` or `npm start` from the `server` folder.
+- The server expects `MONGODB_URI` and `SESSION_SECRET` in `server/.env`.
+- CORS is currently configured to allow `http://localhost:5173` and `http://localhost:3000` with credentials enabled.
+- `bcrypt`, `@types/bcrypt`, `connect-mongo`, and `ts-node` are installed now for upcoming auth/backend work, even though they are not fully used yet in the checked files.
