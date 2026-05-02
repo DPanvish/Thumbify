@@ -149,3 +149,39 @@ export const deleteThumbnail = async(req: Request, res: Response) => {
         res.status(500).json({message: "Internal Server Error"});
     }
 }
+
+export const getUserThumbnails = async(req: Request, res: Response) => {
+    try{
+        const {userId} = req.session;
+
+        const thumbnails = await Thumbnail.find({userId}).sort({createdAt: -1});
+
+        res.status(200).json({
+            message: "Thumbnails fetched successfully",
+            thumbnails
+        });
+    }catch(error){
+        console.log(error);
+        res.status(500).json({message: "Internal Server Error"});
+    }
+}
+
+export const getThumbnailById = async(req: Request, res: Response) => {
+    try{
+        const {id} = req.params;
+        const {userId} = req.session;
+
+        const thumbnail = await Thumbnail.findOne({
+            _id: id,
+            userId
+        });
+
+        res.status(200).json({
+            message: "Thumbnail fetched successfully",
+            thumbnail
+        });
+    }catch(error){
+        console.log(error);
+        res.status(500).json({message: "Internal Server Error"});
+    }
+}
