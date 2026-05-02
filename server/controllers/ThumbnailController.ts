@@ -25,7 +25,32 @@ const colorSchemeDescriptions = {
     pastel: 'soft pastel colors, low saturation, gentle tones, calm and friendly aesthetic',
 }
 
+const getGeminiErrorDetails = (error: unknown) => {
+    const apiError = error as {
+        status?: number;
+        message?: string;
+        error?: {
+            code?: number;
+            message?: string;
+            status?: string;
+            details?: Array<{
+                "@type"?: string;
+                retryDelay?: string;
+            }>;
+        };
+    };
+
+    const status = apiError.status || apiError.error?.code;
+    const message = apiError.error?.message || apiError.message || "";
+    const isQuotaError = status === 429 || apiError.error?.status === "RESOURCE_EXHAUSTED";
+    const retryDelay = apiError.error?.details?.find((detail) => detail.retryDelay)?.retryDelay;
+
+    return { isQuotaError, message, retryDelay };
+}
+
 export const generateThumbnail = async(req: Request, res: Response) => {
+    let thumbnailId: string | undefined;
+
     try{
         const {userId} = req.session;
         const {title, prompt: user_prompt, style, aspect_ratio, color_scheme, text_overlay} = req.body;
@@ -40,8 +65,9 @@ export const generateThumbnail = async(req: Request, res: Response) => {
             text_overlay,
             isGenerating: true
         })
+        thumbnailId = thumbnail._id.toString();
 
-        const model = "gemini-2.5-flash-image";
+        const model = process.env.GEMINI_IMAGE_MODEL || "gemini-2.5-flash-image";
 
         const generationConfig: GenerateContentConfig = {
             maxOutputTokens: 32768,
@@ -82,7 +108,7 @@ export const generateThumbnail = async(req: Request, res: Response) => {
             prompt += `Additional details: ${user_prompt}.`
         }
 
-        prompt += `The thumbnail should be ${aspect_ratio}, visually stunning, and designed to maximize click-through rate, Make it bold, professional, and impossible to ignore.`
+        prompt += `The thumbnail should be ${aspect_ratio || "16:9"}, visually stunning, and designed to maximize click-through rate. Make it bold, professional, and impossible to ignore.`
 
         // Generate the image using ai model
         const response: any = await ai.models.generateContent({
@@ -128,7 +154,21 @@ export const generateThumbnail = async(req: Request, res: Response) => {
         // Remove image file from disk
         fs.unlinkSync(filePath);
     }catch(error){
-        console.log(error);
+        console.error(error);
+
+        if(thumbnailId){
+            await Thumbnail.findByIdAndUpdate(thumbnailId, {isGenerating: false});
+        }
+
+        const geminiError = getGeminiErrorDetails(error);
+        if(geminiError.isQuotaError){
+            return res.status(429).json({
+                message: "Gemini image generation quota exceeded. Please wait and try again, or check your Google AI plan and billing.",
+                retryAfter: geminiError.retryDelay,
+                details: geminiError.message
+            });
+        }
+
         res.status(500).json({message: "Internal Server Error"});
     }
 }
