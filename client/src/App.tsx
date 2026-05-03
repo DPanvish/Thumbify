@@ -9,6 +9,10 @@ import MyGeneration from "./pages/MyGeneration";
 import YtPreview from "./pages/YtPreview";
 import Login from "./components/Login";
 import { useEffect } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "react-hot-toast";
+
+const queryClient = new QueryClient();
 
 export default function App() {
     
@@ -19,7 +23,8 @@ export default function App() {
     }, [pathname])
     
     return (
-        <>
+        <QueryClientProvider client={queryClient}>
+            <Toaster />
             <LenisScroll />
             <Navbar />
             <Routes>
@@ -31,6 +36,6 @@ export default function App() {
                 <Route path="/login" element={<Login />} />
             </Routes>
             <Footer />
-        </>
+        </QueryClientProvider>
     );
 }

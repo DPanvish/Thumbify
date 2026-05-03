@@ -130,3 +130,56 @@ Notes:
 - The server expects `MONGODB_URI` and `SESSION_SECRET` in `server/.env`.
 - CORS is currently configured to allow `http://localhost:5173` and `http://localhost:3000` with credentials enabled.
 - `bcrypt`, `@types/bcrypt`, `connect-mongo`, and `ts-node` are installed now for upcoming auth/backend work, even though they are not fully used yet in the checked files.
+
+Step 3: Client API and auth state packages
+------------------------------------------
+
+Command:
+
+```bash
+cd client
+npm install @tanstack/react-query axios react-hot-toast
+```
+
+Dependencies added and why they are used:
+
+- `@tanstack/react-query`
+  - Manages async server state, mutations, caching, and request lifecycle for the frontend.
+  - Used in `client/src/App.tsx` through `QueryClient` and `QueryClientProvider`, and in `client/src/context/AuthContext.tsx` for auth mutations and user verification flows.
+
+- `axios`
+  - Provides a simple HTTP client for calling backend APIs.
+  - Used in `client/src/configs/api.ts` to create a shared API client with `baseURL` and `withCredentials`.
+
+- `react-hot-toast`
+  - Shows lightweight toast notifications for success and error states.
+  - Used in `client/src/context/AuthContext.tsx` for login, signup, logout, and error feedback.
+
+Notes:
+- The client API layer reads `VITE_BASE_URL` and falls back to `http://localhost:3000`.
+- `axios` is configured with `withCredentials: true`, which matches the backend session-based auth setup.
+
+Step 4: Server AI and media storage packages
+--------------------------------------------
+
+Command:
+
+```bash
+cd server
+npm install @google/genai cloudinary
+```
+
+Dependencies added and why they are used:
+
+- `@google/genai`
+  - Connects the backend to Google Gemini models for AI-powered content generation.
+  - Used in `server/configs/ai.ts` to create the Gemini client and in `server/controllers/ThumbnailController.ts` to generate thumbnail images.
+
+- `cloudinary`
+  - Uploads and stores generated images in a hosted media service.
+  - Used in `server/controllers/ThumbnailController.ts` to upload generated thumbnail files after local image creation.
+
+Notes:
+- The backend now includes AI thumbnail generation logic in `server/controllers/ThumbnailController.ts`.
+- The Gemini client expects `GEMINI_API_KEY` in the server environment.
+- The thumbnail generation flow also needs Cloudinary credentials configured before uploads can work properly.
